@@ -9,7 +9,11 @@ const userRoutes = require('./routes/user');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ["GET", "POST", "PUT", "DELETE"],
+}));
+
 app.use(helmet());
 
 app.use(bodyParser.json({ extented: false }));
