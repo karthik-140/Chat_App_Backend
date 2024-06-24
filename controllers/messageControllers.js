@@ -1,3 +1,5 @@
+const { Op, where } = require('sequelize');
+
 const Messages = require('../models/messages');
 
 exports.sendMessage = async (req, res, next) => {
@@ -13,7 +15,19 @@ exports.sendMessage = async (req, res, next) => {
 
 exports.getMessages = async (req, res, next) => {
   try {
-    const messages = await Messages.findAll()
+    const { messageId } = req.query
+
+    // console.log(`messageId-->${Math.random()}--->`, messageId)
+    const messages = await Messages.findAll(
+      messageId && {
+        where: {
+          id: {
+            [Op.gt]: messageId
+          }
+        }
+      }
+    )
+    // console.log('messages--->', messages)
     res.status(200).json(messages);
   } catch (err) {
     console.log('Something went wrong!!', err)
