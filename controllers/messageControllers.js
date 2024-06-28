@@ -1,11 +1,14 @@
-const { Op, where } = require('sequelize');
+const { Op } = require('sequelize');
 
 const Messages = require('../models/messages');
 
 exports.sendMessage = async (req, res, next) => {
   try {
-    const { message } = req.body
-    const response = await Messages.create({ message, userId: req.user.id, userName: req.user.name })
+    const { message, groupId } = req.body
+    const response = await Messages.create(
+      { message, userId: req.user.id, userName: req.user.name, groupId }
+    );
+
     res.status(201).json({ message: 'Message sent successfully!!', response })
   } catch (err) {
     console.log('Something went wrong!!', err)
@@ -15,19 +18,19 @@ exports.sendMessage = async (req, res, next) => {
 
 exports.getMessages = async (req, res, next) => {
   try {
-    const { messageId } = req.query
+    const { groupId, messageId } = req.query
 
-    // console.log(`messageId-->${Math.random()}--->`, messageId)
     const messages = await Messages.findAll(
-      messageId && {
+      {
         where: {
+          groupId,
           id: {
-            [Op.gt]: messageId
-          }
+            [Op.gt]: messageId || 0
+          },
         }
       }
     )
-    // console.log('messages--->', messages)
+
     res.status(200).json(messages);
   } catch (err) {
     console.log('Something went wrong!!', err)

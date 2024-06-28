@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 
 const Users = require('../models/users');
 const jwtServices = require('../services/jwtServices');
@@ -48,3 +49,21 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ message: 'Something went wrong!!', details: err })
   }
 }
+
+exports.getAllGroupUsers = async (req, res, next) => {
+  try {
+    const users = await Users.findAll({
+      where: {
+        id: {
+          [Op.ne]: req.user.id
+        }
+      }
+    });
+
+    res.status(200).json(users);
+  } catch (err) {
+    console.log('Something went wrong!!', err)
+    res.status(500).json({ message: 'Something went wrong!!', details: err })
+  }
+}
+
