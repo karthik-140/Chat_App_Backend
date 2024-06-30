@@ -1,8 +1,12 @@
+const { instrument } = require('@socket.io/admin-ui');
 const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 const cors = require('cors');
 const helmet = require('helmet');
+const http = require('http');
+const { Server } = require('socket.io')
+
 
 const sequelize = require('./util/database');
 const Users = require('./models/users');
@@ -21,6 +25,29 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  },
+});
+
+io.on('connection', (socket) => {
+  socket.on('send-message', (message, userGroupInfo) => {
+    const groupId = userGroupInfo?.groupId
+    if (!groupId) {
+      socket.broadcast.emit('receive-message', (message))
+    } else {
+      socket.to(groupId).emit('receive-message', ({ ...userGroupInfo, message }))
+    }
+  })
+
+  socket.on('join-group', (groupId) => {
+    socket.join(groupId)
+  })
+})
+
 app.use(helmet());
 
 app.use(bodyParser.json({ extented: false }));
@@ -38,10 +65,12 @@ Messages.belongsTo(Groups);
 Groups.belongsToMany(Users, { through: UserGroups });
 Users.belongsToMany(Groups, { through: UserGroups });
 
+instrument(io, { auth: false });
+
 sequelize
   .sync()
   .then(() => {
-    app.listen(process.env.PORT);
+    server.listen(process.env.PORT);
   }).catch((err) => {
     console.log(err)
   })
