@@ -6,8 +6,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const http = require('http');
 const { Server } = require('socket.io')
+const cron = require('node-cron');
 
-
+const schedule = require('./util/schedule');
 const sequelize = require('./util/database');
 const Users = require('./models/users');
 const Messages = require('./models/messages');
@@ -74,3 +75,10 @@ sequelize
   }).catch((err) => {
     console.log(err)
   })
+
+cron.schedule('30 2 * * *', schedule.moveChatsToArchivedChats,
+  {
+    scheduled: true,
+    timezone: "Asia/Kolkata",
+  }
+);
