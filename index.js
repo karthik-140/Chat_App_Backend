@@ -22,14 +22,14 @@ const groupRoutes = require('./routes/group');
 const app = express();
 
 app.use(cors({
-  origin: 'https://chat-app140.netlify.app/',
+  origin: 'https://chat-app140.netlify.app',
   methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'https://chat-app140.netlify.app/',
+    origin: 'https://chat-app140.netlify.app',
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
