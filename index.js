@@ -21,17 +21,15 @@ const groupRoutes = require('./routes/group');
 
 const app = express();
 
-// test commit for deployment
-
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: process.env.FRONTEND_HOST,
   methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_HOST,
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
