@@ -21,6 +21,8 @@ const groupRoutes = require('./routes/group');
 
 const app = express();
 
+// test commit for deployment
+
 app.use(cors({
   origin: 'http://localhost:3000',
   methods: ["GET", "POST", "PUT", "DELETE"],
